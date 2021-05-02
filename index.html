@@ -1,55 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Number Generator</title>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap');
-        html, body {
-        height: 100%;
-        margin: 0px;
-    }
-        .container{
-            height: calc(100% - 7em);
+
+        /* ====== so it is centered on the page */
+        html,
+        body {
+            height: 100%;
+            margin: 0px;
+        }
+
+        .container {
+            height: 100%;
             display: flex;
         }
+
         .container h1 {
-            margin:auto;
+            margin: auto;
             font-size: 7em;
         }
-        .container span{
+        /* space between the digits groups */
+        .container span {
             padding: .5em .2em;
-            
+
         }
-        .numbers{
+
+        .numbers {
             font-family: 'Roboto Mono', monospace;
-            
-        }
-        .numbers span{
-            margin:0px;
+
         }
 
-        .controls{
-            display:flex;
-            justify-content: space-evenly;
-        }
-        .controls h3{
-            text-align: center;
-        }
-        .slider {
-  -webkit-appearance: none;
 
-  height: 12px;
-  border-radius: 5px;  
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-
-}
     </style>
 </head>
+
 <body>
     <div class="container">
 
@@ -57,26 +48,54 @@
             <span>000</span><span>00</span><span>0000</span>
         </h1>
     </div>
-    <div class="controls">
-        <div>
-            <h3>Speed(Hz)</h3>
-            <label id="speedValue" for="speed">2</label>Hz
-            <input type="range"  step="0.1" min="1" max="20" value="3" class="slider" id="speed">
-        </div>
-        <div>
-            <h3>Randomness</h3>
-            +<label id="randomnessValue" for="randomness">2</label>%
-            <input type="range" step="1" min="0" max="500" value="25" class="slider" id="randomness">
-        </div>
-        <!-- <div>
-            <h3>speed</h3>
-            <label id="label0" for="myRange0">2</label>
-            <input type="range" step="0.1" min="1" max="100" value="50" class="slider" id="myRange0">
-        </div> -->
-    
-    </div>
+
+    <script>
+        const interval = 62 // 1000/16.2 (16Hz)
+        const randomness = 0.24 // 24%
+
+        const updateSingleDigit = (i, element, spanIndex) => {
+            // split digits, into an array
+            const digits = element.innerText.split('')
+
+            // adds randomness to each iteration interval
+            const ranodmizedDelay = interval + (interval * Math.random() * randomness) //intarval - randomness% -> interval + randomness%
+
+            let digitRange
+            // if is the first digit
+            if (i == 0 && spanIndex == 0) {
+                digitRange = 7
+            } else {
+                digitRange = 10
+            }
+
+            // randomize i'th digit
+            digits[i] = Math.floor(Math.random() * digitRange) //0 -> 9
+
+            // set element value
+            element.innerText = digits.join('')
+
+            // calls itself again after ranodmized delay in ms
+            setTimeout(() => updateSingleDigit(i, element, spanIndex), ranodmizedDelay)
+        }
+
+        asyncRandomizer = (element, spanIndex) => {
+            const digitsN = element.innerText.length
+
+            // first call for each digit
+            for (let i = 0; i < digitsN; i++) {
+                const offset = Math.floor(Math.random() * interval) //0->interval
+
+                // first call with a random offset so they start at diferent times 
+                setTimeout(() => updateSingleDigit(i, element, spanIndex), offset)
+            }
+        }
+
+        // grab elements and start randomizer
+        const numbers = [...document.getElementById('numbers').children]
+        numbers.forEach((e, i) => asyncRandomizer(e, i))
+    </script>
 
 
-    <script src="randomizer.js"></script>
 </body>
+
 </html>
